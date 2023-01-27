@@ -2,14 +2,45 @@ from __future__ import annotations
 
 import unittest
 
-from env_should_be.utils import Number
+from src.env_should_be import is_valid_env
+class TestIsValidEnv(unittest.TestCase):
+    def test_valid_env(self):
+        expected_env = {
+            'DB_USER': {'length': 6, 'regex': '^[a-zA-Z0-9]+$', 'required': True},
+            'DB_PASSWORD': {'length': 11, 'regex': '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})', 'required': True},
+            'DB_HOST': {'options': ['localhost', '127.0.0.1'], 'required': True},
+            'DB_PORT': {'length': 4, 'regex': '^[0-9]+$'},
+            'APP_ENV': {'options': ['dev', 'prod'], 'required': True},
+        }
 
+        actual_env = {
+            'DB_USER': 'myuser',
+            'DB_PASSWORD': 'MyPassw0rd!',
+            'DB_HOST': 'localhost',
+            'DB_PORT': '3306',
+            'APP_ENV': 'dev',
+        }
+        invalid_vars = is_valid_env(expected_env, actual_env)
+        self.assertEqual(invalid_vars, set())
 
-class TestSimple(unittest.TestCase):
+    def test_invalid_env(self):
+        expected_env = {
+            'DB_USER': {'length': 8, 'regex': '^[a-zA-Z0-9]+$', 'required': True},
+            'DB_PASSWORD': {'length': 12, 'regex': '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})', 'required': True},
+            'DB_HOST': {'options': ['localhost', '127.0.0.1'], 'required': True},
+            'DB_PORT': {'length': 4, 'regex': '^[0-9]+$'},
+            'APP_ENV': {'options': ['dev', 'prod'], 'required': True},
+        }
 
-    def test_add(self):
-        self.assertEqual((Number(5) + Number(6)).value, 11)
-
+        actual_env = {
+            'DB_USER': 'myuser',
+            'DB_PASSWORD': 'MyPassw0rd',
+            'DB_HOST': '127.0.0.2',
+            'DB_PORT': '3306',
+            'APP_ENV': 'testing',
+        }
+        invalid_vars = is_valid_env(expected_env, actual_env)
+        self.assertEqual(invalid_vars, {('DB_USER', 'length') ,('APP_ENV', 'options') ,('DB_PASSWORD', 'length') ,('DB_HOST', 'options')})
 
 if __name__ == '__main__':
     unittest.main()

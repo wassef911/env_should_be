@@ -1,0 +1,30 @@
+{
+  "DB_USER": {
+    "length": 8,
+    "regex": "^[a-zA-Z0-9]+$",
+    "required": true
+  },
+  "DB_PASSWORD": {
+    "length": 12,
+    "regex": "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,})",
+    "required": true
+  },
+  "DB_HOST": {
+    "options": [
+      "localhost",
+      "127.0.0.1"
+    ],
+    "required": true
+  },
+  "DB_PORT": {
+    "length": 4,
+    "regex": "^[0-9]+$"
+  },
+  "APP_ENV": {
+    "options": [
+      "dev",
+      "prod"
+    ],
+    "required": true
+  }
+}
