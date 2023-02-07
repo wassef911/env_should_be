@@ -2,15 +2,17 @@ from __future__ import annotations
 
 import os
 from json import load
+from .description import *
+
 
 def load_env_file(file_path):
     if not os.path.isfile(file_path):
-        raise FileNotFoundError(f'{file_path} does not exist.')
+        raise FileNotFoundError(f"{file_path} does not exist.")
     with open(file_path) as file:
         env_vars = {}
         for line in file:
-            if not line.startswith('#'):
-                key, value = line.strip().split('=')
+            if not line.startswith("#"):
+                key, value = line.strip().split("=")
                 env_vars[key] = value
     return env_vars
 
@@ -21,46 +23,25 @@ def load_all_env_vars():
         env_vars[key] = value
     return env_vars
 
-def load_json_description(file_path)-> dict:
+
+def load_json_description(file_path) -> dict:
     if not os.path.isfile(file_path):
         raise FileNotFoundError(f"{file_path} does not exist.")
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         json_data = load(file)
     return json_data
 
-def is_valid_env(expected:dict, actual: dict) -> set:
+
+
+
+def is_valid_env(expected: dict, actual: dict) -> set:
+    descriptions: list[Description] = [Length, MinLength, MaxLength, Regex, Option]
     invalid_vars = set()
     for key, value in expected.items():
-        if key not in actual:
-            if value.get('required', False):
-                invalid_vars.add(tuple([key,'required']))
-            continue
-
         actual_value = actual[key]
-        if 'length' in value:
-            if len(actual_value) != value['length']:
-                invalid_vars.add(tuple([key,'length']))
-            continue
-
-        if 'min_length' in value:
-            if len(actual_value) < value['min_length']:
-                invalid_vars.add(tuple([key,'min_length']))
-            continue
-
-        if 'max_length' in value:
-            if len(actual_value) > value['max_length']:
-                invalid_vars.add(tuple([key,'max_length']))
-            continue
-
-        if 'regex' in value:
-            import re
-            if not re.match(value['regex'], actual_value):
-                invalid_vars.add(tuple([key,'regex']))
-            continue
-
-        if 'options' in value:
-            if actual_value not in value['options']:
-                invalid_vars.add(tuple([key,'options']))
-            continue
-        # TODO: constant/IsInt/IsString/if_other_variable/if_not_other_variable
+        for cls in descriptions:
+            if cls.get_name() in value:
+                description = cls(value[cls.get_name()])
+                if not description.does_pass(actual_value):
+                    invalid_vars.add(tuple([key, description.get_name()]))
     return invalid_vars
