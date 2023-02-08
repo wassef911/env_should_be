@@ -34,14 +34,14 @@ def load_json_description(file_path) -> dict:
 
 
 
-def is_valid_env(expected: dict, actual: dict) -> set:
-    descriptions: list[Description] = [Length, MinLength, MaxLength, Regex, Option]
+def is_valid_env(expected_env: dict, actual: dict) -> set:
+    validations: list[Description] = [Length, MinLength, MaxLength, Regex, Option]
     invalid_vars = set()
-    for key, value in expected.items():
-        actual_value = actual[key]
-        for cls in descriptions:
-            if cls.get_name() in value:
-                description = cls(value[cls.get_name()])
-                if not description.does_pass(actual_value):
-                    invalid_vars.add(tuple([key, description.get_name()]))
+    for key, value in expected_env.items():
+        for cls in validations:
+            validation_name = cls.get_name()
+            if validation_name in value:
+                instance = cls(value[validation_name])
+                if not instance.does_pass(actual[key]):
+                    invalid_vars.add(tuple([key, validation_name]))
     return invalid_vars

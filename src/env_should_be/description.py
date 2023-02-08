@@ -2,19 +2,20 @@ import re
 from abc import ABC, abstractmethod
 from typing import Any
 
-from abc import ABC, abstractmethod
-from typing import Any
 
 class Description(ABC):
+    @staticmethod
+    def get_name() -> str:
+        return Description.to_snake_case(Description.__name__)
 
     def __init__(self, value: Any):
         self.value = value
 
     @staticmethod
     def to_snake_case(name):
-        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-        name = re.sub('__([A-Z])', r'_\1', name)
-        name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+        name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+        name = re.sub("__([A-Z])", r"_\1", name)
+        name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", name)
         return name.lower()
 
     @staticmethod
@@ -37,11 +38,11 @@ class Description(ABC):
             raise ValueError("Invalid value")
 
     @abstractmethod
-    def does_pass(self) -> bool:
+    def does_pass(self, actual: str) -> bool:
         pass
 
-class Length(Description):
 
+class Length(Description):
     @staticmethod
     def get_name() -> str:
         return Description.to_snake_case(Length.__name__)
@@ -50,17 +51,20 @@ class Length(Description):
         return isinstance(value, int) and value > 0
 
     def does_pass(self, actual: str):
-        return actual.__len__() == self.value
+        return hasattr(actual, "__len__") and actual.__len__() == self.value
 
 
 class MinLength(Length):
-
     @staticmethod
     def get_name() -> str:
         return Description.to_snake_case(MinLength.__name__)
 
     def does_pass(self, actual: str):
-        return actual.__len__() > self.value
+        return (
+            isinstance(actual, str)
+            and hasattr(actual, "__len__")
+            and actual.__len__() >= self.value
+        )
 
 
 class MaxLength(Length):
@@ -69,7 +73,11 @@ class MaxLength(Length):
         return Description.to_snake_case(MaxLength.__name__)
 
     def does_pass(self, actual: str):
-        return actual.__len__() < self.value
+        return (
+            isinstance(actual, str)
+            and hasattr(actual, "__len__")
+            and actual.__len__() <= self.value
+        )
 
 
 class Regex(Description):
@@ -100,4 +108,52 @@ class Option(Description):
         return actual in self.value
 
 
-# TODO: constant/IsInt/IsString/if_other_variable/if_not_other_variable
+class Option(Description):
+    @staticmethod
+    def get_name() -> str:
+        return Description.to_snake_case(Option.__name__)
+
+    def is_valid(self, value: list):
+        return hasattr(value, "__iter__") and value.__len__() > 0
+
+    def does_pass(self, actual: str):
+        return actual in self.value
+
+
+class Constant(Description):
+    @staticmethod
+    def get_name() -> str:
+        return Description.to_snake_case(Constant.__name__)
+
+    def is_valid(self, value: any):
+        return isinstance(value, str) and value.__len__() > 0
+
+    def does_pass(self, actual: str):
+        return isinstance(actual, str) and actual == self.value
+
+
+class IsInt(Description):
+    @staticmethod
+    def get_name() -> str:
+        return Description.to_snake_case(IsInt.__name__)
+
+    def is_valid(self, value: any):
+        return isinstance(value, bool)
+
+    def does_pass(self, actual: str):
+        return isinstance(actual, int) == self.value
+
+
+class IsString(Description):
+    @staticmethod
+    def get_name() -> str:
+        return Description.to_snake_case(IsString.__name__)
+
+    def is_valid(self, value: any):
+        return isinstance(value, bool)
+
+    def does_pass(self, actual: str):
+        return isinstance(actual, str) == self.value
+
+
+# TODO: if_other_variable/if_not_other_variable
