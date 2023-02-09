@@ -5,7 +5,7 @@ from json import load
 from .description import *
 
 
-def load_env_file(file_path):
+def load_env_file(file_path)-> dict:
     if not os.path.isfile(file_path):
         raise FileNotFoundError(f"{file_path} does not exist.")
     with open(file_path) as file:
@@ -17,7 +17,7 @@ def load_env_file(file_path):
     return env_vars
 
 
-def load_all_env_vars():
+def load_all_env_vars() -> dict:
     env_vars = {}
     for key, value in os.environ.items():
         env_vars[key] = value
