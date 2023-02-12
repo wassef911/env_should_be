@@ -18,6 +18,7 @@ setuptools.setup(
         'Documentation': 'https://github.com/wassef911/env_should_be',
         'Bug Reports': 'https://github.com/wassef911/env_should_be/issues',
         'Source Code': 'https://github.com/wassef911/env_should_be',
+        'Funding': 'Tounes Lina',
     },
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),
