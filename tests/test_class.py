@@ -15,11 +15,11 @@ class TestLength(unittest.TestCase):
             instance: Description = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
-        for v in ["E", None, 1.2, 0]:
+        for v in ['E', None, 1.2, 0]:
             self.assertRaises(ValueError, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(4, "aabb"), (1, "a"), (10, "aaabbbccce")]:
+        for expected, value in [(4, 'aabb'), (1, 'a'), (10, 'aaabbbccce')]:
             instance: Description = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
@@ -28,7 +28,7 @@ class TestLength(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "length")
+        self.assertEqual(self.cls.get_name(), 'length')
 
 
 class TestMinLength(unittest.TestCase):
@@ -41,20 +41,20 @@ class TestMinLength(unittest.TestCase):
             instance: Description = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
-        for v in ["E", None, 1.2, 0]:
+        for v in ['E', None, 1.2, 0]:
             self.assertRaises(ValueError, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(4, "aabb4"), (1, "a11"), (10, "aaabbbccce111")]:
+        for expected, value in [(4, 'aabb4'), (1, 'a11'), (10, 'aaabbbccce111')]:
             instance: Description = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
-        for expected, value in [(4, "aab"), (4, {}), (1, 1.2), (2, None)]:
+        for expected, value in [(4, 'aab'), (4, {}), (1, 1.2), (2, None)]:
             instance: Description = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "min_length")
+        self.assertEqual(self.cls.get_name(), 'min_length')
 
 
 class TestMaxLength(unittest.TestCase):
@@ -67,20 +67,20 @@ class TestMaxLength(unittest.TestCase):
             instance: Description = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
-        for v in ["E", None, 1.2, 0]:
+        for v in ['E', None, 1.2, 0]:
             self.assertRaises(ValueError, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(4, "aabb"), (2, "a"), (2, ""), (4, "123")]:
+        for expected, value in [(4, 'aabb'), (2, 'a'), (2, ''), (4, '123')]:
             instance: Description = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
-        for expected, value in [(4, "aabb5"), (4, {}), (1, 1.2), (2, None)]:
+        for expected, value in [(4, 'aabb5'), (4, {}), (1, 1.2), (2, None)]:
             instance: Description = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "max_length")
+        self.assertEqual(self.cls.get_name(), 'max_length')
 
 
 class TestOption(unittest.TestCase):
@@ -89,41 +89,41 @@ class TestOption(unittest.TestCase):
         super().setUp()
 
     def test_is_valid(self):
-        for v in [["d", 5], [2.2, False]]:
+        for v in [['d', 5], [2.2, False]]:
             instance: Description = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
-        for v in ["E", None, 1.2, 0, [], {}]:
+        for v in ['E', None, 1.2, 0, [], {}]:
             self.assertRaises(ValueError, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [
-            (["dev", "prod"], "prod"),
-            (["0.0.0.0", "localhost"], "0.0.0.0"),
+            (['dev', 'prod'], 'prod'),
+            (['0.0.0.0', 'localhost'], '0.0.0.0'),
             ([5000, 6000], 5000),
         ]:
             instance: Description = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [
-            (["dev", "prod"], "local"),
-            (["0.0.0.0", "localhost"], "http://127.0.0.1"),
+            (['dev', 'prod'], 'local'),
+            (['0.0.0.0', 'localhost'], 'http://127.0.0.1'),
             ([5000, 6000], 7894),
         ]:
             instance: Description = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "option")
+        self.assertEqual(self.cls.get_name(), 'option')
 
 
 class TestRegex(unittest.TestCase):
     def setUp(self):
         self.cls = Regex
         self.valid_regex = [
-            "(?i)(\W|^)(baloney|darn|drat|fooey|gosh\sdarnit|heck)(\W|$)",
-            "(\W|^)[\w.\-]{0,25}@(yahoo|hotmail|gmail)\.com(\W|$)",
-            "192\.168\.1\.\d{1,3}$",
+            r'(?i)(\W|^)(baloney|darn|drat|fooey|gosh\sdarnit|heck)(\W|$)',
+            r'(\W|^)[\w.\-]{0,25}@(yahoo|hotmail|gmail)\.com(\W|$)',
+            r'192\.168\.1\.\d{1,3}$',
         ]
         super().setUp()
 
@@ -137,23 +137,23 @@ class TestRegex(unittest.TestCase):
 
     def test_does_pass(self):
         for expected, value in [
-            (self.valid_regex[0], "baloney"),
-            (self.valid_regex[1], "wassef@yahoo.com"),
-            (self.valid_regex[2], "192.168.1.255"),
+            (self.valid_regex[0], 'baloney'),
+            (self.valid_regex[1], 'wassef@yahoo.com'),
+            (self.valid_regex[2], '192.168.1.255'),
         ]:
             instance: Description = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [
-            (self.valid_regex[0], "stock dips"),
-            (self.valid_regex[1], "wassef@company.tn"),
-            (self.valid_regex[2], "192.168.1.5555"),
+            (self.valid_regex[0], 'stock dips'),
+            (self.valid_regex[1], 'wassef@company.tn'),
+            (self.valid_regex[2], '192.168.1.5555'),
         ]:
             instance: Description = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "regex")
+        self.assertEqual(self.cls.get_name(), 'regex')
 
 
 class TestConstant(unittest.TestCase):
@@ -162,21 +162,38 @@ class TestConstant(unittest.TestCase):
         super().setUp()
 
     def test_is_valid(self):
-        for v in ["True","False","localhost","domain.com.org",{},"$#{}",5555,1.2,None,"null"]:
+        for v in [
+            'True',
+            'False',
+            'localhost',
+            'domain.com.org',
+            {},
+            '$#{}',
+            5555,
+            1.2,
+            None,
+            'null',
+        ]:
             instance: Description = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
     def test_does_pass(self):
-        for expected, value in [(5, "5"), ("a string", "a string"), (10.2, "10.2"),(True,"True")]:
+        for expected, value in [
+            (5, '5'),
+            ('a string', 'a string'),
+            (10.2, '10.2'),
+            (True, 'True'),
+        ]:
             instance: Description = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
-        for expected, value in [(4, "aab"), (4, {}), (1, 1.2), (2, None)]:
+        for expected, value in [(4, 'aab'), (4, {}), (1, 1.2), (2, None)]:
             instance: Description = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "constant")
+        self.assertEqual(self.cls.get_name(), 'constant')
+
 
 class TestIsInt(unittest.TestCase):
     def setUp(self):
@@ -184,24 +201,25 @@ class TestIsInt(unittest.TestCase):
         super().setUp()
 
     def test_is_valid(self):
-        for v in [True,False]:
+        for v in [True, False]:
             instance: Boolean = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
-        for v in ["E", None, 1.2, 0,"True","False"]:
+        for v in ['E', None, 1.2, 0, 'True', 'False']:
             self.assertRaises(ValueError, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(True, 21), (False,"AbC" )]:
+        for expected, value in [(True, 21), (False, 'AbC')]:
             instance: Boolean = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
-        for expected, value in [(True, {}), (True, 1.2), (True, None),(False,False)]:
+        for expected, value in [(True, {}), (True, 1.2), (True, None), (False, False)]:
             instance: Boolean = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "is_int")
+        self.assertEqual(self.cls.get_name(), 'is_int')
+
 
 class TestIsFloat(unittest.TestCase):
     def setUp(self):
@@ -209,24 +227,25 @@ class TestIsFloat(unittest.TestCase):
         super().setUp()
 
     def test_is_valid(self):
-        for v in [True,False]:
+        for v in [True, False]:
             instance: Boolean = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
-        for v in ["E", None, 1.2, 0,"True","False",{},[]]:
+        for v in ['E', None, 1.2, 0, 'True', 'False', {}, []]:
             self.assertRaises(ValueError, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(True, 2.2), (False,"21.2"), (False,2)]:
+        for expected, value in [(True, 2.2), (False, '21.2'), (False, 2)]:
             instance: Boolean = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
-        for expected, value in [(True, {}), (True, 1), (True, None),(True,False)]:
+        for expected, value in [(True, {}), (True, 1), (True, None), (True, False)]:
             instance: Boolean = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), "is_float")
+        self.assertEqual(self.cls.get_name(), 'is_float')
 
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     unittest.main()

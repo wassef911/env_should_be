@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import re
-from abc import ABC, abstractmethod
+from abc import ABC
+from abc import abstractmethod
 from typing import Any
 
 
@@ -13,9 +16,9 @@ class Description(ABC):
 
     @staticmethod
     def to_snake_case(name):
-        name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-        name = re.sub("__([A-Z])", r"_\1", name)
-        name = re.sub("([a-z0-9])([A-Z])", r"\1_\2", name)
+        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+        name = re.sub('__([A-Z])', r'_\1', name)
+        name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
         return name.lower()
 
     @staticmethod
@@ -35,7 +38,7 @@ class Description(ABC):
         if self.is_valid(val):
             self.__value = val
         else:
-            raise ValueError("Invalid value")
+            raise ValueError('Invalid value')
 
     @abstractmethod
     def does_pass(self, actual: str) -> bool:
@@ -45,13 +48,13 @@ class Description(ABC):
 class Length(Description):
     @staticmethod
     def get_name() -> str:
-        return Description.to_snake_case(Length.__name__)
+        return Description.to_snake_case('Length')
 
     def is_valid(self, value):
         return isinstance(value, int) and value > 0
 
     def does_pass(self, actual: str):
-        return hasattr(actual, "__len__") and actual.__len__() == self.value
+        return hasattr(actual, '__len__') and actual.__len__() == self.value
 
 
 class Boolean(Description):
@@ -67,7 +70,7 @@ class MinLength(Length):
     def does_pass(self, actual: str):
         return (
             isinstance(actual, str)
-            and hasattr(actual, "__len__")
+            and hasattr(actual, '__len__')
             and actual.__len__() >= self.value
         )
 
@@ -80,7 +83,7 @@ class MaxLength(Length):
     def does_pass(self, actual: str):
         return (
             isinstance(actual, str)
-            and hasattr(actual, "__len__")
+            and hasattr(actual, '__len__')
             and actual.__len__() <= self.value
         )
 
@@ -109,7 +112,7 @@ class Option(Description):
     def is_valid(self, value: list):
         return (
             not isinstance(value, str)
-            and hasattr(value, "__iter__")
+            and hasattr(value, '__iter__')
             and value.__len__() > 0
         )
 
@@ -123,7 +126,10 @@ class Option(Description):
         return Description.to_snake_case(Option.__name__)
 
     def is_valid(self, value: list):
-        return type(value) is list and hasattr(value, "__iter__") and value.__len__() > 0
+        return (
+            type(value) is list and hasattr(
+                value, '__iter__') and value.__len__() > 0
+        )
 
     def does_pass(self, actual: str):
         return actual in self.value
@@ -161,6 +167,7 @@ class IsStr(Boolean):
 
     def does_pass(self, actual: any):
         return isinstance(actual, str) == self.value
+
 
 class IsFloat(Boolean):
     @staticmethod

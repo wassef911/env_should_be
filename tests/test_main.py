@@ -3,11 +3,17 @@ from __future__ import annotations
 import unittest
 
 from src.env_should_be.utils import is_valid_env
+
+
 class TestIsValidEnv(unittest.TestCase):
     def test_valid_env(self):
         expected_env = {
             'DB_USER': {'length': 6, 'regex': '^[a-zA-Z0-9]+$', 'required': True},
-            'DB_PASSWORD': {'length': 11, 'regex': '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})', 'required': True},
+            'DB_PASSWORD': {
+                'length': 11,
+                'regex': r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})',
+                'required': True,
+            },
             'DB_HOST': {'option': ['localhost', '127.0.0.1'], 'required': True},
             'DB_PORT': {'length': 4, 'regex': '^[0-9]+$'},
             'APP_ENV': {'option': ['dev', 'prod'], 'required': True},
@@ -26,7 +32,11 @@ class TestIsValidEnv(unittest.TestCase):
     def test_invalid_env(self):
         expected_env = {
             'DB_USER': {'length': 8, 'regex': '^[a-zA-Z0-9]+$', 'required': True},
-            'DB_PASSWORD': {'length': 12, 'regex': '^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})', 'required': True},
+            'DB_PASSWORD': {
+                'length': 12,
+                'regex': r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})',
+                'required': True,
+            },
             'DB_HOST': {'option': ['localhost', '127.0.0.1'], 'required': True},
             'DB_PORT': {'length': 4, 'regex': '^[0-9]+$'},
             'APP_ENV': {'option': ['dev', 'prod'], 'required': True},
@@ -40,7 +50,17 @@ class TestIsValidEnv(unittest.TestCase):
             'APP_ENV': 'testing',
         }
         invalid_vars = is_valid_env(expected_env, actual_env)
-        self.assertEqual(invalid_vars, {('DB_USER', 'length') ,('APP_ENV', 'option') ,('DB_PASSWORD', 'length'),('DB_PASSWORD', 'regex') ,('DB_HOST', 'option')})
+        self.assertEqual(
+            invalid_vars,
+            {
+                ('DB_USER', 'length'),
+                ('APP_ENV', 'option'),
+                ('DB_PASSWORD', 'length'),
+                ('DB_PASSWORD', 'regex'),
+                ('DB_HOST', 'option'),
+            },
+        )
+
 
 if __name__ == '__main__':
     unittest.main()
