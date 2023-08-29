@@ -26,8 +26,7 @@ class TestIsValidEnv(unittest.TestCase):
             'DB_PORT': '3306',
             'APP_ENV': 'dev',
         }
-        invalid_vars = is_valid_env(expected_env, actual_env)
-        self.assertEqual(invalid_vars, set())
+        self.assertEqual(is_valid_env(expected_env, actual_env), True)
 
     def test_invalid_env(self):
         expected_env = {
@@ -49,16 +48,14 @@ class TestIsValidEnv(unittest.TestCase):
             'DB_PORT': '3306',
             'APP_ENV': 'testing',
         }
-        invalid_vars = is_valid_env(expected_env, actual_env)
         self.assertEqual(
-            invalid_vars,
-            {
-                ('DB_USER', 'length'),
-                ('APP_ENV', 'option'),
-                ('DB_PASSWORD', 'length'),
-                ('DB_PASSWORD', 'regex'),
-                ('DB_HOST', 'option'),
-            },
+            is_valid_env(expected_env, actual_env),
+            [
+                ['APP_ENV', ['option']],
+                ['DB_HOST', ['option']],
+                ['DB_PASSWORD', ['length', 'regex']],
+                ['DB_USER', ['length']],
+            ],
         )
 
 

@@ -23,18 +23,18 @@ class TestEnvFileFunctions(unittest.TestCase):
         env_vars = load_all_env_vars()
         self.assertIsInstance(env_vars, dict)
 
-    def test_load_json_description(self):
+    def test_load_json_file(self):
         # Test with a valid file
         file_path = 'test_file.json'
         with open(file_path, 'w') as file:
             file.write('{"TEST_KEY": "TEST_VALUE"}')
-        json_data = load_json_description(file_path)
+        json_data = load_json_file(file_path)
         self.assertEqual(json_data, {'TEST_KEY': 'TEST_VALUE'})
         os.remove(file_path)
 
         # Test with an invalid file
         file_path = 'invalid_file.json'
-        self.assertRaises(FileNotFoundError, load_json_description, file_path)
+        self.assertRaises(FileNotFoundError, load_json_file, file_path)
 
 
 if __name__ == '__main__':

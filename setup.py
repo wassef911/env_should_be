@@ -15,10 +15,10 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://github.com/wassef911/env_should_be',
     project_urls={
-        'Documentation': 'https://github.com/wassef911/env_should_be',
+        'Documentation': 'https://github.com/wassef911/env_should_be/blob/master/README.md',
         'Bug Reports': 'https://github.com/wassef911/env_should_be/issues',
         'Source Code': 'https://github.com/wassef911/env_should_be',
-        'Funding': 'Tounes Lina',
+        'Funding': 'Tounes Lina, honorable mention since they inspired the idea.',
     },
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),

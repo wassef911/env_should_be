@@ -4,6 +4,7 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
+from typing import Optional
 
 
 class Description(ABC):
@@ -41,7 +42,7 @@ class Description(ABC):
             raise ValueError('Invalid value')
 
     @abstractmethod
-    def does_pass(self, actual: str) -> bool:
+    def does_pass(self, actual: str | None) -> bool:
         pass
 
 
@@ -53,7 +54,7 @@ class Length(Description):
     def is_valid(self, value):
         return isinstance(value, int) and value > 0
 
-    def does_pass(self, actual: str):
+    def does_pass(self, actual: str | None) -> bool:
         return hasattr(actual, '__len__') and actual.__len__() == self.value
 
 
@@ -67,7 +68,7 @@ class MinLength(Length):
     def get_name() -> str:
         return Description.to_snake_case(MinLength.__name__)
 
-    def does_pass(self, actual: str):
+    def does_pass(self, actual: str | None) -> bool:
         return (
             isinstance(actual, str)
             and hasattr(actual, '__len__')
@@ -80,7 +81,7 @@ class MaxLength(Length):
     def get_name() -> str:
         return Description.to_snake_case(MaxLength.__name__)
 
-    def does_pass(self, actual: str):
+    def does_pass(self, actual: str | None) -> bool:
         return (
             isinstance(actual, str)
             and hasattr(actual, '__len__')
@@ -100,8 +101,8 @@ class Regex(Description):
         except Exception:
             return False
 
-    def does_pass(self, actual: str):
-        return re.match(self.value, actual)
+    def does_pass(self, actual: str | None) -> bool:
+        return actual != None and re.match(self.value, actual)
 
 
 class Option(Description):
@@ -116,7 +117,7 @@ class Option(Description):
             and value.__len__() > 0
         )
 
-    def does_pass(self, actual: str):
+    def does_pass(self, actual: str | None) -> bool:
         return actual in self.value
 
 
@@ -131,7 +132,7 @@ class Option(Description):
                 value, '__iter__') and value.__len__() > 0
         )
 
-    def does_pass(self, actual: str):
+    def does_pass(self, actual: str | None) -> bool:
         return actual in self.value
 
 
@@ -147,7 +148,7 @@ class Constant(Description):
         except Exception:
             return False
 
-    def does_pass(self, actual: str):
+    def does_pass(self, actual: str | None) -> bool:
         return isinstance(actual, str) and actual == str(self.value)
 
 

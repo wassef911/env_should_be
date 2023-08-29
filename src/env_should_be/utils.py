@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from json import load
+from typing import List
 
 from .description import *
 
@@ -25,7 +26,7 @@ def load_all_env_vars() -> dict:
     return env_vars
 
 
-def load_json_description(file_path) -> dict:
+def load_json_file(file_path: str) -> dict:
     if not os.path.isfile(file_path):
         raise FileNotFoundError(f'{file_path} does not exist.')
     with open(file_path) as file:
@@ -33,15 +34,19 @@ def load_json_description(file_path) -> dict:
     return json_data
 
 
-def is_valid_env(expected_env: dict, actual: dict) -> set:
-    validations: list[Description] = [
-        Length, MinLength, MaxLength, Regex, Option]
-    invalid_vars = set()
-    for key, value in expected_env.items():
-        for cls in validations:
-            validation_name = cls.get_name()
-            if validation_name in value:
-                instance = cls(value[validation_name])
-                if not instance.does_pass(actual[key]):
-                    invalid_vars.add(tuple([key, validation_name]))
-    return invalid_vars
+def is_valid_env(expected_env: dict, actual_env: dict) -> Optional[True]:
+    invalid_vars = []
+    klass: Description = None  # just to type hint
+    for key, values in expected_env.items():
+        fails: list[str] = []
+        for klass in [Length, MinLength, MaxLength, Regex, Option]:
+            if klass.get_name() not in values:
+                # user did not use this description
+                continue
+            description = klass(values[klass.get_name()])
+            if not description.does_pass(actual_env.get(key, None)):
+                fails.append(klass.get_name())
+        if fails.__len__() > 0:
+            invalid_vars.append([key, fails])
+    invalid_vars.sort(key=lambda fail: fail[0])
+    return invalid_vars if invalid_vars.__len__() > 0 else True
