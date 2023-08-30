@@ -58,10 +58,10 @@ if __name__ == '__main__':
                 description_path=path, errors=is_valid))
 
     if errors.__len__() and not args.fail_silently:
-        for i in errors:
+        for e in errors:
             print('\n')
-            print(
-                i.errors[0],
-            )
+            print(f'Env Not matching {e.description_path}')
+            for variable, fails in e.errors:
+                print(f'\n \n {variable}, failing to match {fails}')
         exit(1)
     exit(0)
