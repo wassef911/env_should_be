@@ -23,15 +23,19 @@ class EnvironmentError:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-        description='How should your environment be ?')
+        description='How should your environment be?')
     parser.add_argument(
-        '-d', '--description', nargs='+', help='<Required> Set flag', required=True
+        '-d',
+        '--description',
+        nargs='+',
+        help='<Required> either one or multiple paths for description files.',
+        required=True,
     )
     parser.add_argument(
         '-fs',
         '--fail-silently',
         type=bool,
-        help='<Required> Set flag',
+        help='<Optional> will return an exit status of 0 even if the description(s) fail to match the current env (still triggers the fail_callback).',
         required=False,
         default=False,
     )
@@ -39,7 +43,7 @@ if __name__ == '__main__':
         '-e',
         '--env-file',
         type=str,
-        help='<Required> Set flag',
+        help='<Optional> not specifying a path to a specific env file to valid description(s) against, environment variables in the current shell will be loaded instead.',
         required=False,
         default=None,
     )
