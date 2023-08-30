@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from json import load
-from typing import List
+from typing import Optional
 
 from .description import *
 
@@ -34,18 +34,26 @@ def load_json_file(file_path: str) -> dict:
     return json_data
 
 
-def is_valid_env(expected_env: dict, actual_env: dict) -> Optional[True]:
+def to_snake_case(name):
+    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    name = re.sub('__([A-Z])', r'_\1', name)
+    name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+    return name.lower()
+
+
+def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
     invalid_vars = []
     klass: Description = None  # just to type hint
     for key, values in expected_env.items():
         fails: list[str] = []
         for klass in [Length, MinLength, MaxLength, Regex, Option]:
-            if klass.get_name() not in values:
+            klass_name = to_snake_case(klass.__name__)
+            if klass_name not in values:
                 # user did not use this description
                 continue
-            description = klass(values[klass.get_name()])
+            description = klass(values[klass_name])
             if not description.does_pass(actual_env.get(key, None)):
-                fails.append(klass.get_name())
+                fails.append(klass_name)
         if fails.__len__() > 0:
             invalid_vars.append([key, fails])
     invalid_vars.sort(key=lambda fail: fail[0])

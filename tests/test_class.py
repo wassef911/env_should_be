@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from src.env_should_be.description import *
+from src.env_should_be.utils import *
 
 
 class TestLength(unittest.TestCase):
@@ -26,9 +27,6 @@ class TestLength(unittest.TestCase):
         for expected, value in [(4, {}), (1, 1.2), (2, None)]:
             instance: Description = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
-
-    def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'length')
 
 
 class TestMinLength(unittest.TestCase):
@@ -54,7 +52,7 @@ class TestMinLength(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'min_length')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'min_length')
 
 
 class TestMaxLength(unittest.TestCase):
@@ -80,7 +78,7 @@ class TestMaxLength(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'max_length')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'max_length')
 
 
 class TestOption(unittest.TestCase):
@@ -114,7 +112,7 @@ class TestOption(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'option')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'option')
 
 
 class TestRegex(unittest.TestCase):
@@ -153,7 +151,7 @@ class TestRegex(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'regex')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'regex')
 
 
 class TestConstant(unittest.TestCase):
@@ -192,7 +190,7 @@ class TestConstant(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'constant')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'constant')
 
 
 class TestIsInt(unittest.TestCase):
@@ -218,7 +216,7 @@ class TestIsInt(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'is_int')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'is_int')
 
 
 class TestIsFloat(unittest.TestCase):
@@ -244,7 +242,7 @@ class TestIsFloat(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(self.cls.get_name(), 'is_float')
+        self.assertEqual(to_snake_case(self.cls.__name__), 'is_float')
 
 
 if __name__ == '__main__':

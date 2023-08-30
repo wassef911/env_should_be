@@ -4,27 +4,11 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
-from typing import Optional
 
 
 class Description(ABC):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(Description.__name__)
-
     def __init__(self, value: Any):
         self.value = value
-
-    @staticmethod
-    def to_snake_case(name):
-        name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-        name = re.sub('__([A-Z])', r'_\1', name)
-        name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
-        return name.lower()
-
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(Description.__name__)
 
     @abstractmethod
     def is_valid(self, value: Any) -> bool:
@@ -47,10 +31,6 @@ class Description(ABC):
 
 
 class Length(Description):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case('Length')
-
     def is_valid(self, value):
         return isinstance(value, int) and value > 0
 
@@ -64,10 +44,6 @@ class Boolean(Description):
 
 
 class MinLength(Length):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(MinLength.__name__)
-
     def does_pass(self, actual: str | None) -> bool:
         return (
             isinstance(actual, str)
@@ -77,10 +53,6 @@ class MinLength(Length):
 
 
 class MaxLength(Length):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(MaxLength.__name__)
-
     def does_pass(self, actual: str | None) -> bool:
         return (
             isinstance(actual, str)
@@ -90,10 +62,6 @@ class MaxLength(Length):
 
 
 class Regex(Description):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(Regex.__name__)
-
     def is_valid(self, value):
         try:
             re.compile(value)
@@ -106,10 +74,6 @@ class Regex(Description):
 
 
 class Option(Description):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(Option.__name__)
-
     def is_valid(self, value: list):
         return (
             not isinstance(value, str)
@@ -122,10 +86,6 @@ class Option(Description):
 
 
 class Option(Description):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(Option.__name__)
-
     def is_valid(self, value: list):
         return (
             type(value) is list and hasattr(
@@ -137,10 +97,6 @@ class Option(Description):
 
 
 class Constant(Description):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(Constant.__name__)
-
     def is_valid(self, value):
         try:
             x = str(value)
@@ -153,27 +109,15 @@ class Constant(Description):
 
 
 class IsInt(Boolean):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(IsInt.__name__)
-
     def does_pass(self, actual: any):
         return isinstance(actual, int) == self.value
 
 
 class IsStr(Boolean):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(IsStr.__name__)
-
     def does_pass(self, actual: any):
         return isinstance(actual, str) == self.value
 
 
 class IsFloat(Boolean):
-    @staticmethod
-    def get_name() -> str:
-        return Description.to_snake_case(IsFloat.__name__)
-
     def does_pass(self, actual: any):
         return isinstance(actual, float) == self.value
