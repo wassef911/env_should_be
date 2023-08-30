@@ -1,5 +1,18 @@
 from __future__ import annotations
 
+__all__ = (
+    'Boolean',
+    'Length',
+    'MinLength',
+    'MaxLength',
+    'Regex',
+    'Option',
+    'Constant',
+    'IsInt',
+    'IsStr',
+    'IsFloat',
+)
+
 import re
 from abc import ABC
 from abc import abstractmethod
@@ -22,12 +35,17 @@ class Description(ABC):
     def value(self, val: Any):
         if self.is_valid(val):
             self.__value = val
-        else:
-            raise ValueError('Invalid value')
+            return
+        raise ValueError(f'Invalid value {val}')
 
     @abstractmethod
     def does_pass(self, actual: str | None) -> bool:
         pass
+
+
+class Boolean(Description):
+    def is_valid(self, value: any):
+        return isinstance(value, bool)
 
 
 class Length(Description):
@@ -36,11 +54,6 @@ class Length(Description):
 
     def does_pass(self, actual: str | None) -> bool:
         return hasattr(actual, '__len__') and actual.__len__() == self.value
-
-
-class Boolean(Description):
-    def is_valid(self, value: any):
-        return isinstance(value, bool)
 
 
 class MinLength(Length):
@@ -76,20 +89,9 @@ class Regex(Description):
 class Option(Description):
     def is_valid(self, value: list):
         return (
-            not isinstance(value, str)
+            isinstance(value, list)
             and hasattr(value, '__iter__')
             and value.__len__() > 0
-        )
-
-    def does_pass(self, actual: str | None) -> bool:
-        return actual in self.value
-
-
-class Option(Description):
-    def is_valid(self, value: list):
-        return (
-            type(value) is list and hasattr(
-                value, '__iter__') and value.__len__() > 0
         )
 
     def does_pass(self, actual: str | None) -> bool:

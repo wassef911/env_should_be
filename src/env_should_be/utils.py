@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import inspect
 import os
+import re
 from json import load
-from typing import Optional
 
-from .description import *
+from . import description as all_descriptions
 
 
 def load_env_file(file_path) -> dict:
@@ -43,11 +44,10 @@ def to_snake_case(name):
 
 def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
     invalid_vars = []
-    klass: Description = None  # just to type hint
     for key, values in expected_env.items():
         fails: list[str] = []
-        for klass in [Length, MinLength, MaxLength, Regex, Option]:
-            klass_name = to_snake_case(klass.__name__)
+        for name, klass in inspect.getmembers(all_descriptions):
+            klass_name = to_snake_case(name)
             if klass_name not in values:
                 # user did not use this description
                 continue
