@@ -1,16 +1,16 @@
 from __future__ import annotations
 
 __all__ = (
-    'Boolean',
-    'Length',
-    'MinLength',
-    'MaxLength',
-    'Regex',
-    'Option',
-    'Constant',
-    'IsInt',
-    'IsStr',
-    'IsFloat',
+    "Boolean",
+    "Length",
+    "MinLength",
+    "MaxLength",
+    "Regex",
+    "Option",
+    "Constant",
+    "IsInt",
+    "IsStr",
+    "IsFloat",
 )
 
 import re
@@ -56,14 +56,14 @@ class Length(Description):
         return isinstance(value, int) and value > 0
 
     def does_pass(self, actual: str | None) -> bool:
-        return hasattr(actual, '__len__') and actual.__len__() == self.value
+        return hasattr(actual, "__len__") and actual.__len__() == self.value
 
 
 class MinLength(Length):
     def does_pass(self, actual: str | None) -> bool:
         return (
             isinstance(actual, str)
-            and hasattr(actual, '__len__')
+            and hasattr(actual, "__len__")
             and actual.__len__() >= self.value
         )
 
@@ -72,7 +72,7 @@ class MaxLength(Length):
     def does_pass(self, actual: str | None) -> bool:
         return (
             isinstance(actual, str)
-            and hasattr(actual, '__len__')
+            and hasattr(actual, "__len__")
             and actual.__len__() <= self.value
         )
 
@@ -93,7 +93,7 @@ class Option(Description):
     def is_valid(self, value: list):
         return (
             isinstance(value, list)
-            and hasattr(value, '__iter__')
+            and hasattr(value, "__iter__")
             and value.__len__() > 0
         )
 
