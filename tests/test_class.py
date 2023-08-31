@@ -3,6 +3,7 @@ from __future__ import annotations
 import unittest
 
 from src.env_should_be.description import *
+from src.env_should_be.exception import *
 from src.env_should_be.utils import *
 
 
@@ -13,19 +14,19 @@ class TestLength(unittest.TestCase):
 
     def test_is_valid(self):
         for v in [4, 5, 2, 6, 8]:
-            instance: Description = self.cls(v)
+            instance = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
         for v in ['E', None, 1.2, 0]:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [(4, 'aabb'), (1, 'a'), (10, 'aaabbbccce')]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [(4, {}), (1, 1.2), (2, None)]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
 
@@ -36,19 +37,19 @@ class TestMinLength(unittest.TestCase):
 
     def test_is_valid(self):
         for v in [4, 5, 2, 6, 8]:
-            instance: Description = self.cls(v)
+            instance = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
         for v in ['E', None, 1.2, 0]:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [(4, 'aabb4'), (1, 'a11'), (10, 'aaabbbccce111')]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [(4, 'aab'), (4, {}), (1, 1.2), (2, None)]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
@@ -62,19 +63,19 @@ class TestMaxLength(unittest.TestCase):
 
     def test_is_valid(self):
         for v in [4, 5, 2, 6, 8]:
-            instance: Description = self.cls(v)
+            instance = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
         for v in ['E', None, 1.2, 0]:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [(4, 'aabb'), (2, 'a'), (2, ''), (4, '123')]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [(4, 'aabb5'), (4, {}), (1, 1.2), (2, None)]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
@@ -88,11 +89,11 @@ class TestOption(unittest.TestCase):
 
     def test_is_valid(self):
         for v in [['d', 5], [2.2, False]]:
-            instance: Description = self.cls(v)
+            instance = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
         for v in ['E', None, 1.2, 0, [], {}]:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [
@@ -100,7 +101,7 @@ class TestOption(unittest.TestCase):
             (['0.0.0.0', 'localhost'], '0.0.0.0'),
             ([5000, 6000], 5000),
         ]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [
@@ -108,7 +109,7 @@ class TestOption(unittest.TestCase):
             (['0.0.0.0', 'localhost'], 'http://127.0.0.1'),
             ([5000, 6000], 7894),
         ]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
@@ -127,11 +128,11 @@ class TestRegex(unittest.TestCase):
 
     def test_is_valid(self):
         for v in self.valid_regex:
-            instance: Description = self.cls(v)
+            instance = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
         for v in [False, {}, None, 1.2, 0]:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [
@@ -139,7 +140,7 @@ class TestRegex(unittest.TestCase):
             (self.valid_regex[1], 'wassef@yahoo.com'),
             (self.valid_regex[2], '192.168.1.255'),
         ]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [
@@ -147,7 +148,7 @@ class TestRegex(unittest.TestCase):
             (self.valid_regex[1], 'wassef@company.tn'),
             (self.valid_regex[2], '192.168.1.5555'),
         ]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
@@ -172,7 +173,7 @@ class TestConstant(unittest.TestCase):
             None,
             'null',
         ]:
-            instance: Description = self.cls(v)
+            instance = self.cls(v)
             self.assertTrue(instance.is_valid(v))
 
     def test_does_pass(self):
@@ -182,11 +183,11 @@ class TestConstant(unittest.TestCase):
             (10.2, '10.2'),
             (True, 'True'),
         ]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
         for expected, value in [(4, 'aab'), (4, {}), (1, 1.2), (2, None)]:
-            instance: Description = self.cls(expected)
+            instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
@@ -204,7 +205,7 @@ class TestIsInt(unittest.TestCase):
             self.assertTrue(instance.is_valid(v))
 
         for v in ['E', None, 1.2, 0, 'True', 'False']:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [(True, 21), (False, 'AbC')]:
@@ -230,7 +231,7 @@ class TestIsFloat(unittest.TestCase):
             self.assertTrue(instance.is_valid(v))
 
         for v in ['E', None, 1.2, 0, 'True', 'False', {}, []]:
-            self.assertRaises(ValueError, self.cls, v)
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
         for expected, value in [(True, 2.2), (False, '21.2'), (False, 2)]:
