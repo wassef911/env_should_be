@@ -1,12 +1,10 @@
+#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
 from dataclasses import dataclass
-from typing import List
 
-__version__ = '0.1.0'
-
-from env_should_be.utils import *
+from .utils import *
 
 
 class Namespace:

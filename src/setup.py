@@ -31,7 +31,7 @@ setuptools.setup(
     },
     entry_points={
         'console_scripts': [
-            'run=env_should_be:main',
+            'env_should_be=env_should_be.main:main',
         ],
     },
 )
