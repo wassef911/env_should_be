@@ -25,7 +25,7 @@ options:
 # TODOs:
 
 - [x] better exceptions
-- [ ] support required arg
+- [x] support required arg
 - [ ] support callbacks
 - [ ] example Dockerfiles for different base images
 - [ ] a more helpful readme

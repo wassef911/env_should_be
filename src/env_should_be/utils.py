@@ -52,7 +52,11 @@ def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
                 # user did not use this description
                 continue
             description = klass(values[klass_name])
-            if not description.does_pass(actual_env.get(key, None)):
+            value = actual_env.get(key, None)
+            is_required = values.get('required', True)
+            if is_required and value == None:
+                raise Exception('is_required not but set')
+            if value != None and not description.does_pass(value):
                 fails.append(klass_name)
         if fails.__len__() > 0:
             invalid_vars.append([key, fails])
