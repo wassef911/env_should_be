@@ -105,12 +105,12 @@ class Constant(Description):
     def is_valid(self, value):
         try:
             x = str(value)
-            return x.__len__() > 0
+            return x.__len__() > 0  # can't use an empty string!
         except Exception:
             return False
 
     def does_pass(self, actual: str | None) -> bool:
-        return isinstance(actual, str) and actual == str(self.value)
+        return str(actual) == str(self.value)
 
 
 class IsInt(Boolean):
