@@ -14,3 +14,11 @@ class DescriptionFileNotLoading(Exception):
 
 class EnvironmentFileNotLoading(Exception):
     pass
+
+
+class RequiredVariableNotSet(Exception):
+    pass
+
+
+class CallBackNotRunning(Exception):
+    pass

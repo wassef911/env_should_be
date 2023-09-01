@@ -26,6 +26,6 @@ options:
 
 - [x] better exceptions
 - [x] support required arg
-- [ ] support callbacks
+- [x] support callbacks
 - [ ] example Dockerfiles for different base images
 - [ ] a more helpful readme
