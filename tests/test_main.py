@@ -58,6 +58,51 @@ class TestIsValidEnv(unittest.TestCase):
             ],
         )
 
+    def test_required_arg_for_env(self):
+        expected_env = {
+            'DB_USER': {
+                'length': 6,
+            },
+            'DB_HOST': {
+                'option': ['localhost'],
+            },
+            'APP_NAME': {
+                'length': 6,
+                'required': False,  # meaning it will only be validated if it exists
+            },
+            'SENT_ARTIFACT_EVERY_N_DAYS': {'is_int': True, 'is_float': False},
+            'MAX_CURRENCY': {'is_int': False, 'is_float': True},
+        }
+
+        actual_env = {
+            'DB_USER': 'myuser',
+            'DB_HOST': 'localhost',
+            'SENT_ARTIFACT_EVERY_N_DAYS': 5,
+            'MAX_CURRENCY': 2.5,
+        }
+        self.assertEqual(
+            is_valid_env(expected_env, actual_env),
+            True,
+        )
+
+        self.assertEqual(
+            is_valid_env(expected_env, {'APP_NAME': 'A', **actual_env}),
+            [
+                ['APP_NAME', ['length']],
+            ],
+        )
+
+        self.assertEqual(
+            is_valid_env(expected_env, {'APP_NAME': 2.5, **actual_env}),
+            [
+                ['APP_NAME', ['length']],
+            ],
+        )
+        self.assertEqual(
+            is_valid_env(expected_env, {'APP_NAME': 'AWERTY', **actual_env}),
+            True,
+        )
+
 
 if __name__ == '__main__':
     unittest.main()

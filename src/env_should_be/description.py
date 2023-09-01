@@ -17,6 +17,7 @@ import re
 from abc import ABC
 from abc import abstractmethod
 from typing import Any
+from .exception import ValueUnassignableToDescription
 
 
 class Description(ABC):
@@ -36,7 +37,9 @@ class Description(ABC):
         if self.is_valid(val):
             self.__value = val
             return
-        raise ValueError(f'Invalid value {val}')
+        raise ValueUnassignableToDescription(
+            f"Value {val} is Invalid, can't be assigned to {self.__class__.__name__} "
+        )
 
     @abstractmethod
     def does_pass(self, actual: str | None) -> bool:
