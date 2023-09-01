@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
+import subprocess
 from json.decoder import JSONDecodeError
 
-from .exception import DescriptionFileNotLoading
+from .exception import CallBackNotRunning
 from .exception import EnvironmentFileNotLoading
 from .utils import *
 
@@ -14,12 +14,7 @@ class Namespace:
     description: list[str]
     fail_silently: bool
     env_file: bool
-
-
-@dataclass
-class EnvironmentError:
-    description_path: str = None
-    errors: list = None
+    callback: str
 
 
 if __name__ == '__main__':
@@ -36,13 +31,21 @@ if __name__ == '__main__':
         '-fs',
         '--fail-silently',
         type=bool,
-        help='<Optional> will return an exit status of 0 even if the description(s) fail to match the current env (still triggers the fail_callback).',
+        help='<Optional> will return an exit status of 0 even if the description(s) fail to match the current env (still triggers the callback).',
         required=False,
         default=False,
     )
     parser.add_argument(
         '-e',
         '--env-file',
+        type=str,
+        help='<Optional> not specifying a path to a specific env file to valid description(s) against, environment variables in the current shell will be loaded instead.',
+        required=False,
+        default=None,
+    )
+    parser.add_argument(
+        '-cb',
+        '--callback',
         type=str,
         help='<Optional> not specifying a path to a specific env file to valid description(s) against, environment variables in the current shell will be loaded instead.',
         required=False,
@@ -62,26 +65,19 @@ if __name__ == '__main__':
             )
     else:
         env = load_all_env_vars()
-    errors: list[EnvironmentError] = []
-    for path in args.description:
-        try:
-            description: dict = load_json_file(path)
-        except (
-            FileNotFoundError,
-            ValueError,
-            JSONDecodeError,
-        ) as exc:
-            raise DescriptionFileNotLoading(
-                f"couldn't load file at:{path}, {exc}")
-        is_valid = is_valid_env(description, env)
-        if is_valid != True:
-            errors.append(EnvironmentError(
-                description_path=path, errors=is_valid))
-
-    if errors.__len__() and not args.fail_silently:
+    errors = get_errors_for(env, args.description)
+    if errors.__len__() > 0:
         for e in errors:
             print(f'Env Not matching {e.description_path}')
             for variable, fails in e.errors:
                 print(f'\n {variable}, failing to match {fails}')
-        exit(1)
+        if args.callback != None:
+            try:
+                subprocess.run([args.callback])
+            except Exception as exc:
+                raise CallBackNotRunning(
+                    f"couldn't the callback script: {args.callback}, {exc}"
+                )
+        if not args.fail_silently:
+            exit(1)
     exit(0)
