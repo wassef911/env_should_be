@@ -66,9 +66,8 @@ class TestIsValidEnv(unittest.TestCase):
             'DB_HOST': {
                 'option': ['localhost'],
             },
-            'BACKUP_EVERY_N_DAYS': {
-                'is_int': True,
-                'is_float': False,
+            'APP_NAME': {
+                'length': 6,
                 'required': False,  # meaning it will only be validated if it exists
             },
             'SENT_ARTIFACT_EVERY_N_DAYS': {'is_int': True, 'is_float': False},
@@ -87,25 +86,20 @@ class TestIsValidEnv(unittest.TestCase):
         )
 
         self.assertEqual(
-            is_valid_env(expected_env, {
-                         'BACKUP_EVERY_N_DAYS': 25.5, **actual_env}),
+            is_valid_env(expected_env, {'APP_NAME': 'A', **actual_env}),
             [
-                ['BACKUP_EVERY_N_DAYS', ['is_int', 'is_float']],
+                ['APP_NAME', ['length']],
             ],
         )
 
         self.assertEqual(
-            is_valid_env(
-                expected_env, {
-                    'BACKUP_EVERY_N_DAYS': 'something', **actual_env}
-            ),
+            is_valid_env(expected_env, {'APP_NAME': 2.5, **actual_env}),
             [
-                ['BACKUP_EVERY_N_DAYS', ['is_int']],
+                ['APP_NAME', ['length']],
             ],
         )
         self.assertEqual(
-            is_valid_env(expected_env, {
-                         'BACKUP_EVERY_N_DAYS': 5, **actual_env}),
+            is_valid_env(expected_env, {'APP_NAME': 'AWERTY', **actual_env}),
             True,
         )
 
