@@ -4,9 +4,11 @@ import inspect
 import os
 import re
 from dataclasses import dataclass
+from dataclasses import field
 from json import JSONDecodeError
 from json import load
-from typing import Optional, List
+from typing import List
+from typing import Optional
 
 from yaml import safe_load
 from yaml.scanner import ScannerError
@@ -19,8 +21,8 @@ from .exception import RequiredVariableNotSet
 
 @dataclass
 class VariableError:
-    description_path: Optional[str] = None
-    errors: List[VariableError] = []
+    description_path: str | None = None
+    errors: list[VariableError] = field(default_factory=list)
 
 
 def load_env_file(file_path) -> dict:
@@ -92,8 +94,8 @@ def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
     return invalid_vars if invalid_vars.__len__() > 0 else True
 
 
-def get_errors_for(env: dict, descriptions: list[str]) -> List[VariableError]:
-    errors: List[VariableError] = []
+def get_errors_for(env: dict, descriptions: list[str]) -> list[VariableError]:
+    errors: list[VariableError] = []
     for path in descriptions:
         extension = get_file_extension(path)
         try:
@@ -111,8 +113,10 @@ def get_errors_for(env: dict, descriptions: list[str]) -> List[VariableError]:
             ScannerError,
             ValueError,
         ) as exc:
-            raise DescriptionFileNotLoading(f"couldn't load file at:{path}, {exc}")
+            raise DescriptionFileNotLoading(
+                f"couldn't load file at:{path}, {exc}")
         is_valid = is_valid_env(description, env)
         if is_valid != True:
-            errors.append(VariableError(description_path=path, errors=is_valid))
+            errors.append(VariableError(
+                description_path=path, errors=is_valid))
     return errors
