@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 import unittest
 
+from yaml.scanner import ScannerError
+
 from src.env_should_be.utils import *
 
 
@@ -69,9 +71,65 @@ class TestGetErrorsForEnv(unittest.TestCase):
             {**env, 'DB_PORT': 8000}, [self.test_file_path])
         self.assertTrue(actual.__len__(), 1)
 
-        file_path = 'invalid_file.env'
-        self.assertRaises(DescriptionFileNotLoading,
-                          get_errors_for, env, [file_path])
+        file_path = 'invalid_file.something'
+        self.assertRaises(FileHasNoExtension, get_errors_for, env, [file_path])
+
+
+class TestGetFileExtension(unittest.TestCase):
+    def test_json_extension(self):
+        file_path = 'example.json'
+        result = get_file_extension(file_path)
+        self.assertEqual(result, '.json')
+
+    def test_yaml_extension(self):
+        file_path = 'data.yaml'
+        result = get_file_extension(file_path)
+        self.assertEqual(result, '.yaml')
+
+    def test_yml_extension(self):
+        file_path = 'config.yml'
+        result = get_file_extension(file_path)
+        self.assertEqual(result, '.yml')
+
+    def test_no_extension(self):
+        file_path = 'myfile'
+        result = get_file_extension(file_path)
+        self.assertEqual(result, '')
+
+    def test_mixed_case_extension(self):
+        file_path = 'Docume,nt..JSON'
+        result = get_file_extension(file_path)
+        self.assertEqual(result, '.json')
+
+
+class TestLoadYAMLFile(unittest.TestCase):
+    test_file_path = 'afile.yaml'
+
+    def tearDown(self):
+        if os.path.exists(self.test_file_path):
+            os.remove(self.test_file_path)
+
+    def test_valid_yaml_file(self):
+        test_yaml_content = """
+        key1: value1
+        key2: value2
+        """
+        with open('test.yaml', 'w') as test_file:
+            test_file.write(test_yaml_content)
+
+        try:
+            result = load_yaml_file('test.yaml')
+            expected_data = safe_load(test_yaml_content)
+            self.assertEqual(result, expected_data)
+        finally:
+            os.remove('test.yaml')  # Clean up the temporary test file
+
+    def test_nonexistent_file(self):
+        with self.assertRaises(FileNotFoundError) as context:
+            load_yaml_file('nonexistent.yaml')
+
+        self.assertTrue(
+            'nonexistent.yaml does not exist.' in str(context.exception))
 
 
 if __name__ == '__main__':

@@ -12,6 +12,10 @@ class DescriptionFileNotLoading(Exception):
     pass
 
 
+class FileHasNoExtension(Exception):
+    pass
+
+
 class EnvironmentFileNotLoading(Exception):
     pass
 
