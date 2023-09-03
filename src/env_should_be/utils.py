@@ -5,10 +5,10 @@ import os
 import re
 from dataclasses import dataclass
 from dataclasses import field
+from functools import wraps
+from io import TextIOWrapper
 from json import JSONDecodeError
 from json import load
-from typing import List
-from typing import Optional
 
 from yaml import safe_load
 from yaml.scanner import ScannerError
@@ -25,16 +25,43 @@ class VariableError:
     errors: list[VariableError] = field(default_factory=list)
 
 
-def load_env_file(file_path) -> dict:
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"{file_path} does not exist.")
-    with open(file_path) as file:
-        env_vars = {}
-        for line in file:
-            if not line.startswith("#"):
-                key, value = line.strip().split("=")
-                env_vars[key] = value
+def file_to_dictionary(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        file_path = args[0]
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"{file_path} does not exist.")
+        with open(file_path) as file:
+            data: dict = func(*args, file=file, **kwargs)
+        return data
+
+    return wrapper
+
+
+@file_to_dictionary
+def load_env_file(file_path: str, file: TextIOWrapper = None) -> dict:
+    if file == None:
+        raise SystemError()
+    env_vars = {}
+    for line in file:
+        if not line.startswith("#"):
+            key, value = line.strip().split("=")
+            env_vars[key] = value
     return env_vars
+
+
+@file_to_dictionary
+def load_yaml_file(file_path: str, file: TextIOWrapper = None) -> dict:
+    if file == None:
+        raise SystemError()
+    return safe_load(file)
+
+
+@file_to_dictionary
+def load_json_file(file_path: str, file: TextIOWrapper = None) -> dict:
+    if file == None:
+        raise SystemError()
+    return load(file)
 
 
 def load_all_env_vars() -> dict:
@@ -44,25 +71,9 @@ def load_all_env_vars() -> dict:
     return env_vars
 
 
-def load_json_file(file_path: str) -> dict:
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"{file_path} does not exist.")
-    with open(file_path) as file:
-        json_data = load(file)
-    return json_data
-
-
 def get_file_extension(file_path) -> str:
     _, file_extension = os.path.splitext(file_path)
     return file_extension.lower()
-
-
-def load_yaml_file(file_path):
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"{file_path} does not exist.")
-    with open(file_path) as yaml_file:
-        data = safe_load(yaml_file)
-    return data
 
 
 def to_snake_case(name):
