@@ -1,0 +1,11 @@
+DB_USER:
+  length: 9
+  regex: "^[a-zA-Z0-9]+$"
+
+DB_PASSWORD:
+  length: 18
+  regex: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,})"
+
+DB_PORT:
+  length: 4
+  is_float: false
