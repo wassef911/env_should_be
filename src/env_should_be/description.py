@@ -12,6 +12,8 @@ __all__ = (
     "IsStr",
     "IsFloat",
     "IsNumber",
+    "IsGreaterThanEq",
+    "IsLowerThanEq",
     "IsHttp",
     "IsHttps",
     "IsIpv4",
@@ -23,7 +25,7 @@ __all__ = (
 import re
 from abc import ABC
 from abc import abstractmethod
-from typing import Optional, Any, List
+from typing import Any, List
 from .exception import ValueUnassignableToDescription
 
 
@@ -55,7 +57,7 @@ class Description(ABC):
 
 class Boolean(Description):
     def is_valid(self, value):
-        return isinstance(value, bool)
+        return not None and isinstance(value, bool)
 
 
 class Length(Description):
@@ -148,6 +150,25 @@ class IsNumber(Boolean):
         case1 = IsFloat(self.value)
         case2 = IsInt(self.value)
         return case1.does_pass(actual) or case2.does_pass(actual)
+
+
+class IsGreaterThanEq(Description):
+    def is_valid(self, value):
+        return (
+            not None
+            and not isinstance(value, bool)
+            and (isinstance(value, int) or isinstance(value, float))
+        )
+
+    def does_pass(self, actual):
+        case1 = IsNumber(True)
+        return case1.does_pass(actual) and (actual >= self.value)
+
+
+class IsLowerThanEq(IsGreaterThanEq):
+    def does_pass(self, actual):
+        case1 = IsNumber(True)
+        return case1.does_pass(actual) and (actual <= self.value)
 
 
 class IsHttp(Boolean):

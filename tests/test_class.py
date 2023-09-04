@@ -21,7 +21,13 @@ class TestLength(unittest.TestCase):
             self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(4, "aabb"), (1, "a"), (10, "aaabbbccce")]:
+        for expected, value in [
+            (4, "aabb"),
+            (1, "a"),
+            (10, "aaabbbccce"),
+            (4, "5000"),
+            (4, "50,0"),
+        ]:
             instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
@@ -208,7 +214,12 @@ class TestIsInt(unittest.TestCase):
             self.assertRaises(ValueUnassignableToDescription, self.cls, v)
 
     def test_does_pass(self):
-        for expected, value in [(True, 21), (False, "AbC")]:
+        for expected, value in [
+            (True, 21),
+            (False, "AbC"),
+            (True, 4555),
+            (False, "5444"),
+        ]:
             instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
@@ -238,7 +249,13 @@ class TestIsFloat(unittest.TestCase):
             instance = self.cls(expected)
             self.assertTrue(instance.does_pass(value))
 
-        for expected, value in [(True, {}), (True, 1), (True, None), (True, False)]:
+        for expected, value in [
+            (True, {}),
+            (True, 1000),
+            (True, None),
+            (True, "21.2"),
+            (True, False),
+        ]:
             instance = self.cls(expected)
             self.assertFalse(instance.does_pass(value))
 
@@ -283,6 +300,95 @@ class TestIsNumber(unittest.TestCase):
 
     def test_get_name(self):
         self.assertEqual(to_snake_case(self.cls.__name__), "is_number")
+
+
+class TestIsGreaterThanEq(unittest.TestCase):
+    def setUp(self):
+        self.cls = IsGreaterThanEq
+        super().setUp()
+
+    def test_is_valid(self):
+        for v in [5, 2.6, 5000, 100.555]:
+            instance = self.cls(v)
+            self.assertTrue(instance.is_valid(v))
+
+        for v in [
+            "E",
+            None,
+            "True",
+            "False",
+            True,
+            False,
+            {},
+            [],
+        ]:
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
+
+    def test_does_pass(self):
+        for expected, value in [
+            (4, 4),
+            (1000, 1001),
+            (10.0, 10),
+            (10.001, 10.01),
+        ]:
+            instance = self.cls(expected)
+            self.assertTrue(instance.does_pass(value))
+
+        for expected, value in [
+            (4, 3.999),
+            (1000, 999.005),
+            (10.01, 10),
+        ]:
+            instance = self.cls(expected)
+            self.assertFalse(instance.does_pass(value))
+
+    def test_get_name(self):
+        self.assertEqual(to_snake_case(self.cls.__name__), "is_greater_than_eq")
+
+
+class TestIsIsLowerThanEq(unittest.TestCase):
+    def setUp(self):
+        self.cls = IsLowerThanEq
+        super().setUp()
+
+    def test_is_valid(self):
+        for v in [5, 2.6, 5000, 100.555]:
+            instance = self.cls(v)
+            self.assertTrue(instance.is_valid(v))
+
+        for v in [
+            "E",
+            None,
+            "True",
+            "False",
+            True,
+            False,
+            {},
+            [],
+        ]:
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
+
+    def test_does_pass(self):
+        for expected, value in [
+            (4, 3.999),
+            (1000, 999.005),
+            (10.01, 10),
+            (4, 4.0),
+            (4, 4),
+        ]:
+            instance = self.cls(expected)
+            self.assertTrue(instance.does_pass(value))
+
+        for expected, value in [
+            (1000, 1001),
+            (10.0, 10.00001),
+            (10.001, 10.01),
+        ]:
+            instance = self.cls(expected)
+            self.assertFalse(instance.does_pass(value))
+
+    def test_get_name(self):
+        self.assertEqual(to_snake_case(self.cls.__name__), "is_lower_than_eq")
 
 
 class TestIsHttp(unittest.TestCase):
