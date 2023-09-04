@@ -44,7 +44,33 @@ options:
                         <Optional> a callback script to be executed an environment fails to match the a description. (still triggered on fail-silently)
 ```
 
-# TODOs:
+## full list of possible descriptions:
+
+```py
+(
+  "boolean",
+  "length",
+  "min_length",
+  "max_length",
+  "regex",
+  "option",
+  "constant",
+  "is_int",
+  "is_str",
+  "is_float",
+  "is_number",
+  "is_greater_than_eq",
+  "is_lower_than_eq",
+  "is_http",
+  "is_https",
+  "is_ipv4",
+  "is_ipv6",
+  "is_email",
+  "is_uuid",
+)
+```
+
+### TODOs:
 
 - [x] better exceptions
 - [x] support required arg
