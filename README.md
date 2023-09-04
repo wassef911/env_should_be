@@ -14,12 +14,12 @@ This environment description can either be one or multiple files and can also be
 $ pip install env_should_be
 
 env_should_be -fs --description /path/to/description/db.yml /path/to/description/app.json --env-file /path/to/.env --callback ./notify_admin.bash
-
 ```
 
 # examples
 
 a number of example should be available [under this link](https://github.com/wassef911/env_should_be/tree/master/examples)
+
 or just do a
 
 ```sh
@@ -32,7 +32,7 @@ How should your environment be?
 
 options:
   -d DESCRIPTION [DESCRIPTION ...], --description DESCRIPTION [DESCRIPTION ...]
-                        <Required> either one or multiple paths for description files.
+                        <Required> either one or multiple paths for description files. (json/yml)
 
   -fs FAIL_SILENTLY, --fail-silently FAIL_SILENTLY
                         <Optional> will return an exit status of 0 even if the description(s) fail to match the current env (still triggers the callback).
