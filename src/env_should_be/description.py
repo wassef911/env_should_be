@@ -11,6 +11,9 @@ __all__ = (
     "IsInt",
     "IsStr",
     "IsFloat",
+    "IsNumber",
+    "IsHttp",
+    "IsHttps",
 )
 
 import re
@@ -85,12 +88,16 @@ class Regex(Description):
     def is_valid(self, value):
         try:
             re.compile(value)
-            return True
+            return True and isinstance(value, str)
         except Exception:
             return False
 
     def does_pass(self, actual: str | None) -> bool:
-        return actual != None and re.match(self.value, actual)
+        return (
+            actual != None
+            and isinstance(actual, str)
+            and (re.match(self.value, actual) != None)
+        )
 
 
 class Option(Description):
@@ -119,7 +126,7 @@ class Constant(Description):
 
 class IsInt(Boolean):
     def does_pass(self, actual):
-        return isinstance(actual, int) == self.value
+        return not isinstance(actual, bool) and isinstance(actual, int) == self.value
 
 
 class IsStr(Boolean):
@@ -130,3 +137,26 @@ class IsStr(Boolean):
 class IsFloat(Boolean):
     def does_pass(self, actual):
         return isinstance(actual, float) == self.value
+
+
+class IsNumber(Boolean):
+    def does_pass(self, actual):
+        case1 = IsFloat(self.value)
+        case2 = IsInt(self.value)
+        return case1.does_pass(actual) or case2.does_pass(actual)
+
+
+class IsHttp(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$"
+        )
+        return i.does_pass(actual)
+
+
+class IsHttps(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^https:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$"
+        )
+        return i.does_pass(actual)
