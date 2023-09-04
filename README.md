@@ -2,8 +2,6 @@
 
 < THIS READMEME is under construction 🤫🤫🤫 >
 
-a cli to help, build multi env applications, an example description.json is found at the root of the project
-
 ```sh
 usage: env_should_be [-h] -d DESCRIPTION [DESCRIPTION ...] [-fs FAIL_SILENTLY] [-e ENV_FILE]
 
@@ -13,7 +11,7 @@ options:
   -h, --help            show this help message and exit
 
   -d DESCRIPTION [DESCRIPTION ...], --description DESCRIPTION [DESCRIPTION ...]
-                        <Required> either one or multiple paths for description files.
+                        <Required> either one or multiple paths for description files. (json/yml)
 
   -fs FAIL_SILENTLY, --fail-silently FAIL_SILENTLY
                         <Optional> will return an exit status of 0 even if the description(s) fail to match the current env (still triggers the fail_callback).
@@ -27,5 +25,5 @@ options:
 - [x] better exceptions
 - [x] support required arg
 - [x] support callbacks
-- [ ] example Dockerfiles for different base images
-- [ ] a more helpful readme
+- [x] example Dockerfiles for different base images (only flask for now)
+- [] a more helpful readme

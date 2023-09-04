@@ -1,0 +1,48 @@
+version: '3'
+services:
+  external-app:
+    build:
+      context: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    # if this was an env file:
+    # env_should_be -e /path/from/inside/container 
+    # or 
+    # env_should_be --env-file /path/from/inside/container 
+    environment:
+      DB_USER: "Bor3iMiaw"
+      DB_PASSWORD: 1234567String@@\^&
+      DB_PORT: 5432
+      APP_NAME: "PythonIsSmart"
+      DEBUG: 'False'
+    # This is a clients facing application so failure to start to should fire a callback to notify admins
+    # we are also seperating the description for a better scalability  
+    command: >
+      sh -c '
+        env_should_be -cb /app/notify_admin.bash \
+        -d "/app/descriptions/app.json" "/app/descriptions/db.yaml" && \
+        flask run --host=0.0.0.0 --port 5000'
+
+  internal-app:
+    build:
+      context: .
+    expose:
+      - 5000
+    volumes:
+      - .:/app
+    environment:
+      DB_USER: "Bor3iMiaw"
+      # password missing 1 char
+      DB_PASSWORD: 1234567String@@\^
+      DB_PORT: 5432
+      APP_NAME: "PythonIsStupid"
+      DEBUG: 'True'
+    # no need to bug the admins, this will print that password length isn't matching the container description...
+    # we also used ("-fs", "--fail-silently") 
+    # so any failure to match the env description, won't be blocking (returns 0)
+    command: >
+      sh -c '
+        env_should_be --fail-silently True -d "/app/descriptions/app.json" "/app/descriptions/db.yaml" && \
+        flask run --host=0.0.0.0 --port 5000'

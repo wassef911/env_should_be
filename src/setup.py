@@ -15,6 +15,9 @@ setuptools.setup(
     long_description=README,
     url="https://github.com/wassef911/env_should_be",
     package_dir={"": "src"},
+    install_requires=[
+        "pyaml",
+    ],
     packages=setuptools.find_packages(where="src"),
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -31,7 +34,7 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "env_should_be=env_should_be:main",
+            "env_should_be=env_should_be.cli:main",
         ],
     },
 )

@@ -1,0 +1,11 @@
+{
+  "APP_NAME": {
+    "option": [
+      "PythonIsStupid",
+      "PythonIsSmart"
+    ]
+  },
+  "DEBUG": {
+    "is_bool": true
+  }
+}
