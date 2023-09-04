@@ -11,12 +11,21 @@ __all__ = (
     "IsInt",
     "IsStr",
     "IsFloat",
+    "IsNumber",
+    "IsGreaterThanEq",
+    "IsLowerThanEq",
+    "IsHttp",
+    "IsHttps",
+    "IsIpv4",
+    "IsIpv6",
+    "IsEmail",
+    "IsUuid",
 )
 
 import re
 from abc import ABC
 from abc import abstractmethod
-from typing import Optional, Any, List
+from typing import Any, List
 from .exception import ValueUnassignableToDescription
 
 
@@ -48,7 +57,7 @@ class Description(ABC):
 
 class Boolean(Description):
     def is_valid(self, value):
-        return isinstance(value, bool)
+        return not None and isinstance(value, bool)
 
 
 class Length(Description):
@@ -85,12 +94,16 @@ class Regex(Description):
     def is_valid(self, value):
         try:
             re.compile(value)
-            return True
+            return True and isinstance(value, str)
         except Exception:
             return False
 
     def does_pass(self, actual: str | None) -> bool:
-        return actual != None and re.match(self.value, actual)
+        return (
+            actual != None
+            and isinstance(actual, str)
+            and (re.match(self.value, actual) != None)
+        )
 
 
 class Option(Description):
@@ -119,7 +132,7 @@ class Constant(Description):
 
 class IsInt(Boolean):
     def does_pass(self, actual):
-        return isinstance(actual, int) == self.value
+        return not isinstance(actual, bool) and isinstance(actual, int) == self.value
 
 
 class IsStr(Boolean):
@@ -130,3 +143,75 @@ class IsStr(Boolean):
 class IsFloat(Boolean):
     def does_pass(self, actual):
         return isinstance(actual, float) == self.value
+
+
+class IsNumber(Boolean):
+    def does_pass(self, actual):
+        case1 = IsFloat(self.value)
+        case2 = IsInt(self.value)
+        return case1.does_pass(actual) or case2.does_pass(actual)
+
+
+class IsGreaterThanEq(Description):
+    def is_valid(self, value):
+        return (
+            not None
+            and not isinstance(value, bool)
+            and (isinstance(value, int) or isinstance(value, float))
+        )
+
+    def does_pass(self, actual):
+        case1 = IsNumber(True)
+        return case1.does_pass(actual) and (actual >= self.value)
+
+
+class IsLowerThanEq(IsGreaterThanEq):
+    def does_pass(self, actual):
+        case1 = IsNumber(True)
+        return case1.does_pass(actual) and (actual <= self.value)
+
+
+class IsHttp(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$"
+        )
+        return i.does_pass(actual)
+
+
+class IsHttps(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^https:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$"
+        )
+        return i.does_pass(actual)
+
+
+class IsIpv4(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$"
+        )
+        return i.does_pass(actual)
+
+
+class IsIpv6(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$"
+        )
+        return i.does_pass(actual)
+
+
+class IsEmail(Boolean):
+    def does_pass(self, actual):
+        i = Regex("([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+")
+        return i.does_pass(actual)
+
+
+class IsUuid(Boolean):
+    def does_pass(self, actual):
+        i = Regex(
+            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$"
+        )
+        return i.does_pass(actual)

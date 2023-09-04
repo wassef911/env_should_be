@@ -96,7 +96,7 @@ def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
             value = actual_env.get(key, None)
             is_required = values.get("required", True)
             if is_required and value == None:
-                raise RequiredVariableNotSet("is_required not but set")
+                raise RequiredVariableNotSet(f"{key} is_required not but set")
             if value != None and not description.does_pass(value):
                 fails.append(klass_name)
         if fails.__len__() > 0:

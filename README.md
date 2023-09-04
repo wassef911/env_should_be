@@ -1,4 +1,4 @@
-![cover](./cover.png)
+![cover](https://raw.githubusercontent.com/wassef911/env_should_be/master/cover.png)
 
 [click to read first article about this package](https://dev.to/wassef911/ship-slightly-better-microservices-4i1m)
 
@@ -52,7 +52,7 @@ options:
 - [x] example Dockerfiles for different base images (only flask for now)
 - [x] a more helpful readme
 - [ ] collect/open issues
-- [ ] support older python versions
-- [ ] support different/more complex descriptions
+- [x] support older python versions
+- [x] support different/more complex descriptions
 - [ ] support setting default values
 - [ ] ship a single executable ?
