@@ -43,7 +43,7 @@ arguments = [
         "dest": "callback",
         "option_strings": ["-cb", "--callback"],
         "type": str,
-        "help": "<Optional> not specifying a path to a specific env file to validate description(s) against, environment variables in the current shell will be loaded instead.",
+        "help": "<Optional> a callback script to be executed an environment fails to match the a description. (still triggered on fail-silently)",
         "required": False,
         "default": None,
     },
