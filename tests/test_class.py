@@ -345,9 +345,9 @@ class TestIsHttp(unittest.TestCase):
         self.assertEqual(to_snake_case(self.cls.__name__), "is_http")
 
 
-class TestIsHttp(unittest.TestCase):
+class TestIsIpv4(unittest.TestCase):
     def setUp(self):
-        self.cls = IsHttps
+        self.cls = IsIpv4
         super().setUp()
 
     def test_is_valid(self):
@@ -369,10 +369,11 @@ class TestIsHttp(unittest.TestCase):
 
     def test_does_pass(self):
         for value in [
-            "https://github.com",
-            "https://gitlab.com",
-            "https://website.something.tn",
-            "https://internal.website.something.com.eu",
+            "192.168.0.1",
+            "10.0.0.1",
+            "172.16.0.1",
+            "203.0.113.0",
+            "127.0.0.1",
         ]:
             instance = self.cls(True)
             self.assertTrue(instance.does_pass(value))
@@ -396,12 +397,194 @@ class TestIsHttp(unittest.TestCase):
             "http://gitlab.com",
             "http://website.something.tn",
             "http://internal.website.something.com.eu",
+            "1278.0.0.1",
+            "12.d.0.1",
         ]:
             instance = self.cls(True)
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(to_snake_case(self.cls.__name__), "is_https")
+        self.assertEqual(to_snake_case(self.cls.__name__), "is_ipv4")
+
+
+class TestIsIpv6(unittest.TestCase):
+    def setUp(self):
+        self.cls = IsIpv6
+        super().setUp()
+
+    def test_is_valid(self):
+        for v in [True, False]:
+            instance = self.cls(v)
+            self.assertTrue(instance.is_valid(v))
+
+        for v in [
+            "E",
+            None,
+            1.2,
+            0,
+            "True",
+            "False",
+            {},
+            [],
+        ]:
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
+
+    def test_does_pass(self):
+        for value in [
+            "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+            "2606:4700:4700::1111",
+            "fd12:3456:7890:abcd:ef01:2345:6789:abcd",
+            "2001:0db8::ff00:0042:8329",
+            "::1",
+        ]:
+            instance = self.cls(True)
+            self.assertTrue(instance.does_pass(value))
+
+        for value in [
+            [],
+            {},
+            None,
+            False,
+            True,
+            "weqe",
+            "2.25",
+            "2",
+            "http://githubcom/",
+            "htt://gitlab.com",
+            "http//gitlab.com",
+            "htt:/gitlab.com",
+            "http://website.something.$",
+            "http://internal.*.something.com.eu",
+            "http://github.com",
+            "http://gitlab.com",
+            "http://website.something.tn",
+            "http://internal.website.something.com.eu",
+            "1278.0.0.1",
+            "12.d.0.1",
+            "2001:0db8:85a3:0000:0000:8a2e:0370:7334:extra",  # Too many groups
+            "2606:4700:4700:::1111",  # Double colons
+            "fd12:3456:7890:abcd:ef01::2345::6789:abcd",  # Double colons within a group
+            "2001:0db8::ff00::0042:8329",  # Double colons without compression
+            "127.0.0.1",  # IPv4 address (not IPv6)
+            "NotAnIPAddress Dummy",  # Invalid format
+        ]:
+            instance = self.cls(True)
+            self.assertFalse(instance.does_pass(value))
+
+    def test_get_name(self):
+        self.assertEqual(to_snake_case(self.cls.__name__), "is_ipv6")
+
+
+class TestIsIsEmail(unittest.TestCase):
+    def setUp(self):
+        self.cls = IsEmail
+        super().setUp()
+
+    def test_is_valid(self):
+        for v in [True, False]:
+            instance = self.cls(v)
+            self.assertTrue(instance.is_valid(v))
+
+        for v in [
+            "E",
+            None,
+            1.2,
+            0,
+            "True",
+            "False",
+            {},
+            [],
+        ]:
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
+
+    def test_does_pass(self):
+        for value in [
+            "john.doe@example.com",
+            "jane.smith12345@gmail.com",
+            "info@company-name.org",
+            "support@my-website.co.uk",
+            "contact_us@subdomain.example.net",
+        ]:
+            instance = self.cls(True)
+            self.assertTrue(instance.does_pass(value))
+
+        for value in [
+            "E",
+            None,
+            1.2,
+            0,
+            "True",
+            "False",
+            {},
+            [],
+            "john.doe@example",  # Missing top-level domain
+            "jane.smith12345.gmail.com",  # Missing "@" symbol
+            "@company-name.org",  # Missing local part
+            "support@.co.uk",  # Empty domain
+            "contact@subdomain..net",  # Double dot in domain
+            "invalid_email_address",  # No "@" symbol
+            "user@invalid_domain@com",  # Multiple "@" symbols
+            "user@.example.com",  # Empty local part
+        ]:
+            instance = self.cls(True)
+            self.assertFalse(instance.does_pass(value))
+
+    def test_get_name(self):
+        self.assertEqual(to_snake_case(self.cls.__name__), "is_email")
+
+
+class TestIsIsUuid(unittest.TestCase):
+    def setUp(self):
+        self.cls = IsUuid
+        super().setUp()
+
+    def test_is_valid(self):
+        for v in [True, False]:
+            instance = self.cls(v)
+            self.assertTrue(instance.is_valid(v))
+
+        for v in [
+            "E",
+            None,
+            1.2,
+            0,
+            "True",
+            "False",
+            {},
+            [],
+        ]:
+            self.assertRaises(ValueUnassignableToDescription, self.cls, v)
+
+    def test_does_pass(self):
+        for value in [
+            "550e8400-e29b-41d4-a716-446655440000",
+            "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+            "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
+            "9e107d9d-12b1-4efc-9e88-df2c99bcb8dd",
+        ]:
+            instance = self.cls(True)
+            self.assertTrue(instance.does_pass(value))
+
+        for value in [
+            "E",
+            None,
+            1.2,
+            0,
+            "True",
+            "False",
+            {},
+            [],
+            "not-a-uuid",
+            "550e8400e29b41d4a716446655440000",  # Missing hyphens
+            "g47ac10b-58cc-4372-a567-0e02b2c3d479",  # Invalid character "g"
+            "6ba7b810-9dad-11d1-80b4-00c04fd430c8!",  # Special character "!"
+            "9e107d9d-12b1-4efc-9e88-df2c99bcb8dd0000",  # Extra characters
+        ]:
+            instance = self.cls(True)
+            self.assertFalse(instance.does_pass(value))
+
+    def test_get_name(self):
+        self.assertEqual(to_snake_case(self.cls.__name__), "is_uuid")
 
 
 if __name__ == "__main__":
