@@ -18,7 +18,53 @@ env_should_be -fs --description /path/to/description/db.yml /path/to/description
 
 # examples
 
-a number of example should be available [under this link](https://github.com/wassef911/env_should_be/tree/master/examples)
+a number of examples should be available [under this link](https://github.com/wassef911/env_should_be/tree/master/examples)
+
+Imagine you have a flask microservice that relies on a database and cache, and you want to ensure that certain environment variables meet specific criteria each time before the app starts, Here's an example YAML description:
+
+```yaml
+DB_USER:
+  length: 8
+  regex: "^[a-zA-Z0-9]+$"
+DB_PASSWORD:
+  length: 12
+  regex: "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,})"
+DB_HOST:
+  option:
+    - localhost
+    - 127.0.0.1
+DB_PORT:
+  length: 4
+  regex: "^[0-9]+$"
+  is_int: True
+  is_float: False
+CACHE: # sure that it has the same value across whatever env?
+  constant: "redis://container_name:6379/1"
+APP_ENV:
+  option:
+    - dev
+    - prod
+  required: false # only get's validated if it is set (not None)
+```
+
+then a compose file:
+
+```yaml
+version: '3'
+services:
+  app:
+    build:
+      context: .
+    expose:
+      - 5000
+    environment:
+    command: >
+      sh -c '
+        env_should_be -d "/app/descriptions/app.json" && \
+        flask run --host=0.0.0.0 --port 5000'
+```
+
+env_should_be will check these conditions before allowing the container to run. If any condition is not met, it can either block the container from running or using the **-fs** argument, let it start and log the errors, depending on your preference…
 
 or just do a
 
