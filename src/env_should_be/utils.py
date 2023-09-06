@@ -9,6 +9,8 @@ from functools import wraps
 from io import TextIOWrapper
 from json import JSONDecodeError
 from json import load
+from typing import List
+from typing import Optional
 
 from yaml import safe_load
 from yaml.scanner import ScannerError
@@ -83,7 +85,7 @@ def to_snake_case(name):
     return name.lower()
 
 
-def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
+def is_valid_env(expected_env: dict, actual_env: dict) -> bool | None:
     invalid_vars = []
     for key, values in expected_env.items():
         fails: list[str] = []
@@ -99,10 +101,10 @@ def is_valid_env(expected_env: dict, actual_env: dict) -> True | None:
                 raise RequiredVariableNotSet(f"{key} is_required not but set")
             if value != None and not description.does_pass(value):
                 fails.append(klass_name)
-        if fails.__len__() > 0:
+        if len(fails) > 0:
             invalid_vars.append([key, fails])
     invalid_vars.sort(key=lambda fail: fail[0])
-    return invalid_vars if invalid_vars.__len__() > 0 else True
+    return invalid_vars if len(invalid_vars) > 0 else True
 
 
 def get_errors_for(env: dict, descriptions: list[str]) -> list[VariableError]:

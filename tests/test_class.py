@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import unittest
 
-from src.env_should_be.description import *
-from src.env_should_be.exception import *
-from src.env_should_be.utils import *
+from env_should_be.description import *
+from env_should_be.exception import *
+from env_should_be.utils import *
 
 
 class TestLength(unittest.TestCase):
@@ -343,7 +343,8 @@ class TestIsGreaterThanEq(unittest.TestCase):
             self.assertFalse(instance.does_pass(value))
 
     def test_get_name(self):
-        self.assertEqual(to_snake_case(self.cls.__name__), "is_greater_than_eq")
+        self.assertEqual(to_snake_case(self.cls.__name__),
+                         "is_greater_than_eq")
 
 
 class TestIsIsLowerThanEq(unittest.TestCase):
