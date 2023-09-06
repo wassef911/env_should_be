@@ -25,7 +25,7 @@ __all__ = (
 import re
 from abc import ABC
 from abc import abstractmethod
-from typing import Any, List
+from typing import Any, List, Optional
 from .exception import ValueUnassignableToDescription
 
 
@@ -51,7 +51,7 @@ class Description(ABC):
         )
 
     @abstractmethod
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         pass
 
 
@@ -64,29 +64,29 @@ class Length(Description):
     def is_valid(self, value):
         return isinstance(value, int) and value > 0
 
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         return (
             actual is not None
             and hasattr(actual, "__len__")
-            and actual.__len__() == self.value
+            and len(actual) == self.value
         )
 
 
 class MinLength(Length):
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         return (
             isinstance(actual, str)
             and hasattr(actual, "__len__")
-            and actual.__len__() >= self.value
+            and len(actual) >= self.value
         )
 
 
 class MaxLength(Length):
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         return (
             isinstance(actual, str)
             and hasattr(actual, "__len__")
-            and actual.__len__() <= self.value
+            and len(actual) <= self.value
         )
 
 
@@ -94,11 +94,11 @@ class Regex(Description):
     def is_valid(self, value):
         try:
             re.compile(value)
-            return True and isinstance(value, str)
+            return isinstance(value, str)
         except Exception:
             return False
 
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         return (
             actual != None
             and isinstance(actual, str)
@@ -108,13 +108,9 @@ class Regex(Description):
 
 class Option(Description):
     def is_valid(self, value: list[Any]):
-        return (
-            isinstance(value, List)
-            and hasattr(value, "__iter__")
-            and value.__len__() > 0
-        )
+        return isinstance(value, List) and hasattr(value, "__iter__") and len(value) > 0
 
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         return actual in self.value
 
 
@@ -122,11 +118,11 @@ class Constant(Description):
     def is_valid(self, value):
         try:
             x = str(value)
-            return x.__len__() > 0  # can't use an empty string!
+            return len(x) > 0  # can't use an empty string!
         except Exception:
             return False
 
-    def does_pass(self, actual: str | None) -> bool:
+    def does_pass(self, actual: Any | None) -> bool:
         return str(actual) == str(self.value)
 
 
@@ -205,7 +201,8 @@ class IsIpv6(Boolean):
 
 class IsEmail(Boolean):
     def does_pass(self, actual):
-        i = Regex("([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+")
+        i = Regex(
+            r"([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+")
         return i.does_pass(actual)
 
 

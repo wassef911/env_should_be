@@ -5,6 +5,7 @@ import argparse
 import logging
 import subprocess
 from json.decoder import JSONDecodeError
+from typing import List
 
 from .exception import CallBackNotRunning
 from .exception import EnvironmentFileNotLoading
@@ -77,7 +78,7 @@ def main():
     else:
         env = load_all_env_vars()
     errors = get_errors_for(env, args.description)
-    if errors.__len__() > 0:
+    if len(errors) > 0:
         for e in errors:
             logging.warning(f"Env Not matching {e.description_path}")
             for variable, fails in e.errors:
