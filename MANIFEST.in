@@ -1,7 +1,6 @@
 include pyproject.toml
 include *.md
 include LICENSE
-recursive-include src/tests *.py
 recursive-include src/env_should_be *.py
 include *.json
 include *.txt
